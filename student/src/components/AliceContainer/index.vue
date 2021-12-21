@@ -21,7 +21,7 @@ export default {
     },
     headerHeight: {
       type: String,
-      default: '80rpx'
+      default: '88rpx'
     },
   },
   computed: {

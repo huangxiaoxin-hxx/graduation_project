@@ -3,18 +3,46 @@
 const uniID = require('uni-id')
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
-	console.log('event : ', event)
 	let res = {}
-	switch (event.action){
+	const {params, action, token} = event
+	switch (action){
 		case 'register':{
-			const {username,password} = event.params
-			res = await uniID.register({username, password})
+			const {username, password, role, code} = params
+			console.log(username, code)
+			res = await uniID.verifyCode({email: username, code: code, type: 'register'})
+			if(res.code != 0) {
+				return res
+			}
+			res = await uniID.register({username, password, role})
 			break;
 		}
 		case 'login':{
-			const {username,password} = event.params
+			const {username, password} = params
 			res = await uniID.login({username, password})
 			break;
+		}
+		case 'sendRegisterCode': {
+			const {username} = params
+			const randomStr = '00000' + Math.floor(Math.random() * 1000000)
+			const code = randomStr.substring(randomStr.length - 6)
+			res = await uniID.setVerifyCode({
+				email: username,
+				code: code,
+				expiresIn: 600,
+				type: 'register'
+			})
+			res.data = {code: code}
+			break;
+		}
+		case 'getUserInfo': {
+			const payload = await uniID.checkToken(token)
+			if (payload.code) {
+			    return payload
+			}
+			const res = await uniID.getUserInfo({
+			    uid: payload.uid,
+			})
+			return res
 		}
 		default:
 			res = {

@@ -66,6 +66,10 @@ export default {
       this.formLoading = true
       try {
         await userRequest('login', formData)
+        this.handleNavTo({
+            url: '/pages/home/index',
+            type: 'switchTab'
+        });
       } catch (error) {
         console.log(error)
       } finally {

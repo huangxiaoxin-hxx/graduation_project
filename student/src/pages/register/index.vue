@@ -3,6 +3,20 @@
     <view class="login_container">
       <view class="login_box">
         <h2 class="form_title" id="signup">Register</h2>
+        <u-radio-group
+          v-model="formData.role"
+          placement="row"
+        >
+          <u-radio
+            :customStyle="{marginRight: '20rpx'}"
+            v-for="(item, index) in role"
+            :key="index"
+            :label="item.role_name"
+            labelColor="#fff"
+            :name="item.role_id"
+          >
+          </u-radio>
+        </u-radio-group>
         <view class="tui-form">
           <view class="tui-view-input">
             <view class="tui-cell-input">
@@ -12,10 +26,40 @@
                 <u-icon name="close-circle" color="#000"></u-icon>
               </view>
             </view>
+
+            <view class="tui-cell-input">
+              <input :adjust-position="false" v-model="formData.code" placeholder="请输入验证码"
+                placeholder-class="tui-phcolor" maxlength="6" type="text"/>
+              <u-verification-code 
+                unique-key="page-register" 
+                ref="uCode" 
+                :seconds="seconds" 
+                @end="end" 
+                @start="start" 
+                :keepRunning="true"
+                @change="codeChange"
+              ></u-verification-code>
+              <u-button 
+                color="linear-gradient(to right, #8daabd, #566873)" 
+                size="mini" 
+                class="send_code_button" 
+                @click="sendCode"
+                :disabled="codeLoading"
+              >{{codeTips}}</u-button>
+
+            </view>
+
             <view class="tui-cell-input">
               <input :adjust-position="false" v-model="formData.password" placeholder="请输入密码" :password="true"
                 placeholder-class="tui-phcolor" type="text" maxlength="36" />
               <view class="tui-icon-close" v-show="formData.password" @tap="clearInput(2)">
+                <u-icon name="close-circle" color="#000"></u-icon>
+              </view>
+            </view>
+            <view class="tui-cell-input">
+              <input :adjust-position="false" v-model="formData.confirmPassword" placeholder="确认密码" :password="true"
+                placeholder-class="tui-phcolor" type="text" maxlength="36" />
+              <view class="tui-icon-close" v-show="formData.confirmPassword" @tap="clearInput(3)">
                 <u-icon name="close-circle" color="#000"></u-icon>
               </view>
             </view>
@@ -38,24 +82,34 @@
 </template>
 
 <script>
-import { loginRule } from '@/checkRule/login.js'
+import { codeRule, registerRule } from '@/checkRule/register.js'
 var graceChecker = require("@/checkRule/graceChecker.js");
 import userRequest from '@/common/userRequest'
+import roleRequest from '@/common/roleRequest'
 export default {
   name: 'login',
   data() {
     return {
       formData: {
         username: null,
-        password: null
+        password: null,
+        confirmPassword: null,
+        code: null,
+        role: null
       },
       formLoading: false,
+      seconds: 60,
+      codeTips: '获取验证码',
+      codeLoading: false,
+      role: []
     }
   },
   methods: {
     async register() {
       const formData = this.formData
-      var checkRes = graceChecker.check(formData, loginRule);
+      console.log(registerRule)
+      var checkRes = graceChecker.check(formData, registerRule);
+      console.log(checkRes)
       if(!checkRes){
 				this.handleToast({title: graceChecker.error})
         return
@@ -69,6 +123,29 @@ export default {
         this.formLoading = false
       }
     },
+    async sendCode() {
+      const formData = this.formData
+      var checkRes = graceChecker.check(formData, codeRule);
+      if(!checkRes){
+				this.handleToast({title: graceChecker.error})
+        return
+			}
+      if(this.$refs.uCode.canGetCode) {
+        // 模拟向后端请求验证码
+        try {
+          await userRequest('sendRegisterCode', formData)
+          // 通知验证码组件内部开始倒计时
+          this.$refs.uCode.start();
+        } catch (error) {
+          console.log(error)
+        } finally {
+          this.formLoading = false
+        }
+      } 
+    },
+    codeChange(text) {
+      this.codeTips = text;
+    },
     clearInput(key) {
       switch (key) {
         case 1:
@@ -77,11 +154,22 @@ export default {
         case 2:
           this.formData.password = null
           break;
+        case 3:
+          this.formData.confirmPassword = null
+          break;
       }
+    },
+    end() {
+      this.codeLoading = false
+    },
+    start() {
+      this.codeLoading = true
     }
   },
   async onLoad() {
-    
+    // 获取权限列表
+    const res = await roleRequest('getRole')
+    this.role = res.roleList
   }
 }
 </script>
@@ -103,6 +191,7 @@ export default {
     .form_title {
       color: #fff;
 			text-align: center;
+      margin-bottom: 100rpx;
     }
     .tui-form {
 			width: 580rpx;
@@ -120,6 +209,7 @@ export default {
 				.tui-cell-input {
 					width: 100%;
 					display: flex;
+          align-items: center;
 					input {
 						flex: 1;
 						border: 0;
@@ -140,6 +230,12 @@ export default {
             padding-right: 10rpx;
             box-sizing: border-box;
 					}
+
+          .send_code_button {
+            width: 180rpx;
+            padding: 0;
+            margin-right: 20rpx;
+          }
 				}
 			}
 
