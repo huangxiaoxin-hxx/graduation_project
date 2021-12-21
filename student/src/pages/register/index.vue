@@ -2,12 +2,12 @@
   <AliceContainer :showHeader="false">
     <view class="login_container">
       <view class="login_box">
-        <h2 class="form_title" id="signup">Login</h2>
+        <h2 class="form_title" id="signup">Register</h2>
         <view class="tui-form">
           <view class="tui-view-input">
             <view class="tui-cell-input">
               <input :adjust-position="false" v-model="formData.username" placeholder="请输入邮箱账号"
-                placeholder-class="tui-phcolor" type="text" />
+                placeholder-class="tui-phcolor"/>
               <view class="tui-icon-close" v-show="formData.username" @tap="clearInput(1)">
                 <u-icon name="close-circle" color="#000"></u-icon>
               </view>
@@ -22,16 +22,14 @@
           </view>
 
           <view class="tui-cell-text">
-            <view class="tui-color-primary" hover-class="tui-opcity" :hover-stay-time="150" @tap="href(1)">忘记密码？
-            </view>
             <view hover-class="tui-opcity" :hover-stay-time="150" style="color: #fff">
-              没有账号？
-              <text class="tui-color-primary" @tap="handleNavTo({url: '/pages/register/index'})">注册</text>
+              已有账号
+              <text class="tui-color-primary" @tap="handleNavTo({url: '/pages/login/index'})">去登录</text>
             </view>
           </view>
           
           <view class="tui-btn-box">
-            <button class="submit-btn" :loading="formLoading" :disabled="formLoading" @click="login">Log in</button>
+            <button class="submit-btn" :loading="formLoading" :disabled="formLoading" @click="register">Register</button>
           </view>
         </view>
       </view>
@@ -52,11 +50,10 @@ export default {
         password: null
       },
       formLoading: false,
-      result: null
     }
   },
   methods: {
-    async login() {
+    async register() {
       const formData = this.formData
       var checkRes = graceChecker.check(formData, loginRule);
       if(!checkRes){
@@ -65,7 +62,7 @@ export default {
 			}
       this.formLoading = true
       try {
-        await userRequest('login', formData)
+        await userRequest('register', formData)
       } catch (error) {
         console.log(error)
       } finally {
