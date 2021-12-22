@@ -18,8 +18,12 @@ const userRequest = async (action, params) => {
       setStorage('token', result.token)
       store.commit('user/setUserInfo', result.userInfo)
     }
+    if(action === 'getUserInfo') {
+      store.commit('user/setUserInfo', result.userInfo)
+    }
     return result
-  } if(result.code === 30204) {
+  }
+  if(result.code === 30204 || result.code === 30203) {
     uni.reLaunch({
       url: '/pages/login/index'
     })

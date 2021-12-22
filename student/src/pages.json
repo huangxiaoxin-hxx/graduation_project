@@ -4,16 +4,19 @@
 			"path": "pages/home/index"
 		},
 		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-app"
-			}
+			"path": "pages/questions/index"
 		},
 		{
 			"path": "pages/login/index"
 		},
 		{
 			"path": "pages/register/index"
+		},
+		{
+			"path": "pages/questions/publish/index"
+		},
+		{
+			"path": "pages/questions/questionList/index"
 		}
 	],
 	"easycom": {
@@ -37,6 +40,12 @@
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-select.png",
         "text": "首页"
-    }]
+    	},
+			{
+				"pagePath": "pages/questions/index",
+				"iconPath": "static/tabbar/questions.png",
+				"selectedIconPath": "static/tabbar/questions-select.png",
+				"text": "问题分类"
+			}]
 }
 }

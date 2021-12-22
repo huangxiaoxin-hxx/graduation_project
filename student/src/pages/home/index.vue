@@ -10,6 +10,10 @@
         :autoplay="false"
         circular
       ></u-swiper>
+      <!-- hot questions -->
+      <view class="hot_box mt40">
+        <view class="title">热门提问</view>
+      </view>
     </view>
   </AliceContainer>
 </template>
@@ -53,10 +57,14 @@ export default {
   position: fixed;
   background-color: #8daabd;
   color: #fff;
+  z-index: 999;
 }
 .home_container {
   width: 100%;
   padding: 40rpx 32rpx 0;
   box-sizing: border-box;
+  .hot_box {
+    width: 100%;
+  }
 }
 </style>
