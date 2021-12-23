@@ -23,17 +23,17 @@ const userRequest = async (action, params) => {
     }
     return result
   }
-  if(result.code === 30204 || result.code === 30203) {
+  if(result.code != 0) {
     uni.reLaunch({
       url: '/pages/login/index'
     })
   } else {
     uni.showToast({
-      title: result.message,
+      title: result,
       duration: 1500,
       icon: "none"
     });
-    throw Error(result.errMsg)
+    throw Error(result)
   }
 }
 

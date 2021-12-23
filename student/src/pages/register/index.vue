@@ -109,7 +109,6 @@ export default {
       const formData = this.formData
       console.log(registerRule)
       var checkRes = graceChecker.check(formData, registerRule);
-      console.log(checkRes)
       if(!checkRes){
 				this.handleToast({title: graceChecker.error})
         return

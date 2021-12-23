@@ -37,6 +37,13 @@ Vue.mixin({
         icon,
         duration
       });
+    },
+    // loading提示封装
+    handleLoading({title, mask}) {
+      uni.showLoading({
+        title,
+        mask
+      })
     }
   }
 });

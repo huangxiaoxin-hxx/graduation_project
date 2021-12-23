@@ -42,7 +42,12 @@ exports.main = async (event, context) => {
 					category_id: category_id,
 					title: new RegExp(searchVal, 'g')
 				}).limit(limit).skip(skip).get()
+				const count = await await article.where({
+					category_id: category_id,
+					title: new RegExp(searchVal, 'g')
+				}).count()
 				res.code = 0
+				res.total = count.total
 			}catch(e){
 				//TODO handle the exception
 				res = e

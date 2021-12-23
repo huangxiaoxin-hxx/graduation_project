@@ -1,11 +1,6 @@
 <template>
   <AliceContainer>
-    <u-navbar
-      slot="header"
-      title="发布问题"
-      @leftClick="handleNavBack"
-      border
-    ></u-navbar>
+    <AliceHeader slot="header">发布问题</AliceHeader>
     <view class="publish_container">
       <form @submit="formSubmit" @reset="formReset">
         <view class="uni-form-item">
@@ -70,7 +65,7 @@
 </template>
 
 <script>
-import userRequest from '@/common/userRequest'
+import getUserInfo from '@/api/user'
 import { mapState } from 'vuex'
 import { submitArticleRule } from '@/checkRule/article'
 var graceChecker = require("@/checkRule/graceChecker.js");
@@ -92,6 +87,7 @@ export default {
   },
   computed: {
     ...mapState('article', ['categories']),
+    ...mapState('user', ['userInfo']),
     columns() {
       console.log(this.categories)
       const list = []
@@ -106,7 +102,7 @@ export default {
     }
   },
   async onLoad() {
-    await userRequest('getUserInfo')
+    await getUserInfo()
   },
   methods: {
     clickShow() {
@@ -149,6 +145,7 @@ export default {
     async formSubmit() {
       const formData = this.article
       var checkRes = graceChecker.check(formData, submitArticleRule);
+      formData.user_id = this.userInfo._id
       if(!checkRes){
 				this.handleToast({title: graceChecker.error})
         return
@@ -174,6 +171,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.header {
+  z-index: 999;
+}
 .publish_container {
   width: 100%;
   padding: 30rpx;

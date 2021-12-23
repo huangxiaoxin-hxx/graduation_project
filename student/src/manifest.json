@@ -1,7 +1,7 @@
 {
-    "name" : "",
+    "name" : "问题论坛",
     "appid" : "__UNI__1ECB548",
-    "description" : "",
+    "description" : "问题论坛",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,
@@ -47,15 +47,16 @@
             },
             "ios" : {},
             /* ios打包配置 */
-            "sdkConfigs" : {}
+            "sdkConfigs" : {
+                "ad" : {}
+            }
         }
     },
     /* SDK配置 */
     "quickapp" : {},
     /* 快应用特有相关 */
     "mp-weixin" : {
-        /* 微信小程序特有相关 */
-        "appid" : "",
+        "appid" : "wx42ddc9ac8a3119ad",
         "setting" : {
             "urlCheck" : false
         },

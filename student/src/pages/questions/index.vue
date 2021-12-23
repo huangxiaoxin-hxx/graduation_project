@@ -14,7 +14,7 @@
         class="categories" 
         v-for="(item, index) in categories" 
         :key="index" 
-        @click="handleNavTo({url: `/pages/questions/questionList/index?category_id=${item._id}`})"
+        @click="handleNavTo({url: `/pages/questions/questionList/index?category_id=${item._id}&question_name=${item.name}`})"
       >
         <image :src="item.icon" :alt="item.name" mode="aspectFill">
         <p>{{item.name}}({{item.article_count}})</p>

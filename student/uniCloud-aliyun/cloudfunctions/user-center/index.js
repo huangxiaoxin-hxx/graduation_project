@@ -39,10 +39,34 @@ exports.main = async (event, context) => {
 			if (payload.code) {
 			    return payload
 			}
-			const res = await uniID.getUserInfo({
+			res = await uniID.getUserInfo({
 			    uid: payload.uid,
 			})
-			return res
+			break
+		}
+		case 'setAvatar': {
+			const { avatar } = params
+			const payload = await uniID.checkToken(token)
+			if(payload.code) {
+				return payload
+			}
+			res = await uniID.setAvatar({
+			    uid: payload.uid,
+			    avatar
+			})
+			break;
+		}
+		case 'setNickname': {
+			const { nickname } = params
+			const payload = await uniID.checkToken(token)
+			if(payload.code) {
+				return payload
+			}
+			res = await uniID.updateUser({
+				uid: payload.uid,
+				nickname
+			})
+			break;
 		}
 		default:
 			res = {
