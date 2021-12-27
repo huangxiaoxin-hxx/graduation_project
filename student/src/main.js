@@ -3,6 +3,7 @@ import App from './App'
 import uView from "uview-ui";
 import store from './store/index'
 import "./common/mixin";
+import "./common/filter";
 
 
 Vue.config.productionTip = false

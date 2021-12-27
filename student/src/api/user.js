@@ -16,3 +16,9 @@ export const setNickname = async (params) => {
   await getUserInfo()
   return res.data
 }
+
+export const setGender = async (params) => {
+  const res = await userRequest('setGender', params)
+  await getUserInfo()
+  return res.data
+}

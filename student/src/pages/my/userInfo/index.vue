@@ -9,7 +9,8 @@
       </view>
       <view class="userInfo_list" v-for="(item, index) in list" :key="index" @click="clickList(item)">
         <view class="userInfo_list_title">{{item.title}}</view>
-        <view class="userInfo_list_value">{{ (userInfo && userInfo[item.value]) || '去设置'}}</view>
+        <view class="userInfo_list_value" v-if="item.value === 'gender'">{{ (userInfo[item.value] && userInfo[item.value].text) || '去设置'}}</view>
+        <view class="userInfo_list_value" v-else>{{ (userInfo && userInfo[item.value]) || '去设置'}}</view>
         <u-icon name="arrow-right" size="14" color="#333" v-if="item.icon"></u-icon>
       </view>
     </view>

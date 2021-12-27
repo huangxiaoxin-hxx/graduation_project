@@ -16,3 +16,8 @@ export const getQuestionList = async (params) => {
   const res = await questionRequest('getQuestionList', params)
   return res
 }
+
+export const getQuestionDetail = async (params) => {
+  const res = await questionRequest('getQuestionDetail', params)
+  return res.data
+}

@@ -18,12 +18,14 @@ exports.main = async (event, context) => {
 			break;
 		case 'addArticle': {
 			try{
+				params.publish_date = new Date().getTime()
+				params.like_count = 0
+				params.comment_count = 0
 				res = await article.add(params)
 				const category = await categories.where({
 					_id: params.category_id
 				}).get()
 				const count = category.data[0].article_count + 1
-				console.log(categories.doc(params.category_id))
 				await categories.doc(params.category_id).update({
 					article_count: count
 				})
@@ -42,13 +44,27 @@ exports.main = async (event, context) => {
 					category_id: category_id,
 					title: new RegExp(searchVal, 'g')
 				}).limit(limit).skip(skip).get()
-				const count = await await article.where({
+				const count = await article.where({
 					category_id: category_id,
 					title: new RegExp(searchVal, 'g')
 				}).count()
 				res.code = 0
 				res.total = count.total
 			}catch(e){
+				//TODO handle the exception
+				res = e
+			}
+			break;
+		}
+		case 'getQuestionDetail': {
+			const { id } = params
+			try {
+					res = await article.where({
+						_id: id
+					}).get()
+					res.code = 0
+					res.data = res.data[0]
+			} catch(e){
 				//TODO handle the exception
 				res = e
 			}

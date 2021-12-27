@@ -17,7 +17,7 @@
         scroll-y="true" 
         class="scroll-Y"
       >
-        <view class="question_list" v-for="(item, index) in questionList" :key="index">
+        <view class="question_list" v-for="(item, index) in questionList" :key="index" @click="handleNavTo({url: `/pages/questions/questionList/questionDetail/index?id=${item._id}`})">
           <image :src="item.avatar" alt="avatar" mode="aspectFill" />
           <view class="question_list_content">
             <h6>{{item.title}}</h6>

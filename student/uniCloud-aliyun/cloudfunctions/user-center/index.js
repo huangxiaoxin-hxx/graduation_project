@@ -68,6 +68,18 @@ exports.main = async (event, context) => {
 			})
 			break;
 		}
+		case 'setGender': {
+			const { gender } = params
+			const payload = await uniID.checkToken(token)
+			if(payload.code) {
+				return payload
+			}
+			res = await uniID.updateUser({
+				uid: payload.uid,
+				gender
+			})
+			break;
+		}
 		default:
 			res = {
 				code: 741,

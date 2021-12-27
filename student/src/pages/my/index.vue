@@ -6,24 +6,56 @@
         <image :src="avatarUrl" alt="avatar" class="avatar" mode="aspectFill" />
         <view class="user_box">
           <view class="nick_name">{{nickName}}</view>
-          <view class="user_name">用户名：{{userInfo.username}}</view>
+          <view class="user_name">用户名：{{ userInfo && userInfo.username}}</view>
           <view class="gender_identity">
-            <view class="gender">性别: {{ gender }}</view>
+            <view class="gender">性别: {{ gender.text || '未设置' }}</view>
           </view>
         </view>
         <u-icon name="arrow-right" size="24" color="#333"></u-icon>
       </view>
+      <view class="my_center">
+        <view class="list" v-for="(item, index) in list" :key="index">
+          <u-icon :name="item.icon" color="#333" size="22"></u-icon>
+          <p>{{item.title}}</p>
+          <u-icon name="arrow-right" color="#333" size="22"></u-icon>
+        </view>
+      </view>
+      <button @click="loginOut" class="login_out">退出登录</button>
     </view>
   </AliceContainer>
 </template>
 
 <script>
+const list = [
+  {
+    icon: 'file-text',
+    title: "我的提问",
+    url: ''
+  },
+  {
+    icon: 'star',
+    title: "我的收藏",
+    url: ''
+  }
+]
 import { getUserInfo } from '@/api/user'
 import { mapState } from 'vuex'
+import { removeStorage } from '@/utils'
 export default {
   name: 'my',
+  data() {
+    return {
+      list: list
+    }
+  },
   methods: {
-
+    loginOut() {
+      removeStorage('token')
+      this.handleNavTo({
+        url: '/pages/login/index',
+        type: "reLaunch"
+      })
+    }
   },
   computed: {
     ...mapState('user', ['userInfo']),
@@ -73,6 +105,7 @@ export default {
     display: flex;
     align-items: center;
     border-bottom: 1px solid rgba(0,0,0,0.1);
+    margin-bottom: 20rpx;
     .avatar {
       width: 140rpx;
       height: 140rpx;
@@ -100,6 +133,40 @@ export default {
         }
       }
     }
+  }
+  .my_center {
+    width: 100%;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    .list {
+      display: flex;
+      align-items: center;
+      padding: 0 20rpx;
+      height: 80rpx;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      &:last-child {
+        border-bottom: none;
+      }
+      p {
+        flex: 1;
+        margin-left: 20rpx;
+        font-size: 28rpx;
+      }
+    }
+  }
+  .login_out {
+    position: fixed;
+    bottom: 120rpx;
+    width: 400rpx;
+    left: 50%;
+    transform: translate(-50%);
+    background-color: #e57470;
+    color: #fff;
+    height: 80rpx;
+    border: none;
+    padding: 0;
+    line-height: 80rpx;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   }
 }
 </style>

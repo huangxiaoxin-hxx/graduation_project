@@ -1,5 +1,5 @@
 <template>
-  <view class="alice-header" :style="style">
+  <view class="alice-header" :style="style" :class="borderBottom ? 'border' : ''">
     <u-icon @click="handleNavBack" name="arrow-left" size="18" :color="fontColor" class="back"></u-icon>
     <view class="title">
       <slot></slot>
@@ -20,13 +20,17 @@ export default {
     fontColor: {
       type: String,
       default: "#fff"
+    },
+    borderBottom: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
     style() {
       return {
         backgroundColor: this.bgColor,
-        color: this.fontColor
+        color: this.fontColor,
       }
     }
   }
@@ -57,5 +61,8 @@ export default {
     position: absolute;
     right: 10rpx;
   }
+}
+.border {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 </style>
