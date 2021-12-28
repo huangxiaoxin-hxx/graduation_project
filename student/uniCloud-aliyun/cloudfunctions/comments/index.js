@@ -1,6 +1,7 @@
 'use strict';
 const db = uniCloud.database()
 const comments = db.collection('opendb-news-comments')
+const article = db.collection('opendb-news-articles')
 const uniID = require('uni-id')
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
@@ -28,6 +29,7 @@ exports.main = async (event, context) => {
 			break;
 		}
 		case 'addComment': {
+			const commentCount = await comments.where({article_id: params.article_id}).count()
 			const { token } = params
 			delete params.token
 			const payload = await uniID.checkToken(token)
@@ -41,6 +43,7 @@ exports.main = async (event, context) => {
 			params.userInfo = data.userInfo
 			params.comment_date = new Date().getTime()
 			res = await comments.add(params)
+			await article.doc(params.article_id).update({comment_count: commentCount.total + 1})
 			res.code = 0
 			break;
 		}

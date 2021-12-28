@@ -35,7 +35,7 @@ Vue.mixin({
         title,
         duration,
         icon,
-        duration
+        mask,
       });
     },
     // loading提示封装

@@ -30,7 +30,7 @@
         <view class="uni-form-item content-item">
           <view class="label">内容</view>
           <view style="width: 500rpx">
-            <u--textarea v-model="article.content" placeholder="请输入内容" autoHeight ></u--textarea>
+            <u--textarea v-model="article.content" placeholder="请输入内容" autoHeight maxlength="-1"></u--textarea>
           </view>
         </view>
         <view class="uni-form-item">
@@ -176,7 +176,7 @@ export default {
 }
 .publish_container {
   width: 100%;
-  padding: 30rpx;
+  padding: 30rpx 30rpx 100rpx;
   box-sizing: border-box;
   .uni-form-item {
     display: flex;

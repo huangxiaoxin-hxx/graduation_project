@@ -8,6 +8,10 @@ const questionRequest = async (action, params = null) => {
   })
 	if(result.code === 0) {
     return result
+  } if(result.code === 30203) {
+    uni.reLaunch({
+      url: '/pages/login/index'
+    })
   } else {
     uni.showToast({
       title: result.message,

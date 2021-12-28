@@ -22,14 +22,14 @@ const userRequest = async (action, params) => {
       store.commit('user/setUserInfo', result.userInfo)
     }
     return result
-  }
-  if(result.code != 0) {
+  } else if(result.code === 30203) {
     uni.reLaunch({
       url: '/pages/login/index'
     })
   } else {
+    console.log(result)
     uni.showToast({
-      title: result,
+      title: result.errMsg,
       duration: 1500,
       icon: "none"
     });

@@ -1,12 +1,23 @@
 <template>
-  <AliceContainer>
-    <AliceHeader slot="header" bgColor="#ffffff" fontColor="#333" borderBottom>文章详情</AliceHeader>
+  <AliceContainer :isShow="isShow">
+    <AliceHeader slot="header" bgColor="#ffffff" fontColor="#333" borderBottom>
+      文章详情
+      <view class="right" slot="right">
+        <view class="thumb" @click="thumbArticle">
+          <u-icon name="thumb-up" color="#333" size="24" v-show="!thumb"></u-icon>
+          <u-icon name="thumb-up-fill" color="#ea7a99" size="24" v-show="thumb"></u-icon>
+        </view>
+        <view class="favorite" @click="favoriteArticle">
+          <u-icon name="star" color="#333" size="24" v-show="!favorite"></u-icon>
+          <u-icon name="star-fill" color="#f1d147" size="24" v-show="favorite"></u-icon>
+        </view>
+      </view>
+    </AliceHeader>
     <view class="detail_container">
       <h6>{{ detail.title }}</h6>
       <p class="date">发布时间：{{ detail.publish_date | moment('YYYY-MM-DD hh:mm:ss') }}</p>
       <image :src="detail.avatar" alt="avatar" mode="aspectFill" />
-      <p class="content">
-        {{detail.content}}
+      <p class="content" v-html="detail.content">
       </p>
     </view>
     <view class="comments" v-if="detail.comment_status == 1">
@@ -33,7 +44,7 @@ const commentType = {
   article: 0,  // 针对文章回复
   comment: 1   // 针对评论回复
 }
-import { getQuestionDetail } from '@/api/questions'
+import { getQuestionDetail, favoriteQuestion, thumbQuestion, viewQuestion } from '@/api/questions'
 import { getComments, addComment } from '@/api/comment'
 import commentsBox from '../../components/comments.vue'
 export default {
@@ -48,13 +59,25 @@ export default {
       page: 1,
       comments: [],
       comment: null,
-      sending: false
+      sending: false,
+      favorite: false, // false 没有被收藏, true 被收藏
+      thumb: false,  // false 没有点赞过,
+      isShow: false
     }
   },
   async onLoad({id}) {
     this.id = id
-    this.detail = await getQuestionDetail({id})
-    await this.getCommentsList()
+    this.isShow = false
+    try {
+      await this.getDetail(id)
+      await this.getCommentsList()
+      await this.addViewCount()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      this.isShow = true
+    }
+    
   },
   methods: {
     async getCommentsList() {
@@ -87,12 +110,40 @@ export default {
         this.sending = false
         uni.hideLoading()
       }
+    },
+    async favoriteArticle() { // 收藏文章
+      this.favorite = !this.favorite
+      await favoriteQuestion({article_id: this.id, add: this.favorite})
+      this.handleToast({
+        title: this.favorite ? '收藏成功' : '取消收藏'
+      })
+    },
+    async thumbArticle() { // 点赞文章
+      this.thumb = !this.thumb
+      await thumbQuestion({article_id: this.id, thumb: this.thumb})
+      this.handleToast({
+        title: this.thumb ? '点赞成功' : '取消点赞'
+      })
+    },
+    async getDetail(id) { // 获取文章详情
+      this.detail = await getQuestionDetail({id})
+      this.favorite = this.detail.favorite
+      this.thumb = this.detail.thumb
+    },
+    async addViewCount() { // 增加文章被浏览数量
+      viewQuestion({article_id: this.id})
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.right {
+  display: flex;
+  .thumb {
+    margin-right: 10rpx;
+  }
+}
 .detail_container {
   width: 100%;
   padding: 32rpx;

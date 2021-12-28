@@ -47,6 +47,10 @@ export default {
     },
     confirmGender() {
       setGender({gender: this.gender})
+      this.handleToast({title: '修改完成'})
+      setTimeout(() => {
+        this.handleNavBack()
+      }, 1500);
     }
   }
 }
