@@ -117,6 +117,20 @@ exports.main = async (event, context) => {
 			}
 			break
 		}
+		case 'getHotQuestionList': {
+			try{
+				res = await article
+					.orderBy('like_count','desc')
+					.orderBy('comment_count','desc')
+					.orderBy('view_count','desc')
+					.limit(3).get()
+				res.code = 0
+			}catch(e){
+				//TODO handle the exception
+				res = e
+			}
+			break
+		}
 		case 'getQuestionDetail': {
 			const {token} = params
 			const payload = await uniID.checkToken(token)

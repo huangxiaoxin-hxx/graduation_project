@@ -69,3 +69,8 @@ export const getCollectQuestionList = async () => {
   const res = await questionRequest('getCollectQuestionList', {token: token})
   return res.data
 }
+
+export const getHotQuestionList = async () => {
+  const res = await questionRequest('getHotQuestionList')
+  return res
+}
