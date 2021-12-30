@@ -7,6 +7,12 @@
 			"path": "pages/my/index"
 		},
 		{
+			"path": "pages/my/myQuestion/index"
+		},
+		{
+			"path": "pages/my/myCollect/index"
+		},
+		{
 			"path": "pages/my/userInfo/index"
 		},
 		{

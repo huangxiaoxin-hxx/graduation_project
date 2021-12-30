@@ -34,7 +34,7 @@ export default {
   methods: {
     
   },
-  async onLoad() {
+  async onShow() {
     await getCategories()
   }
 }

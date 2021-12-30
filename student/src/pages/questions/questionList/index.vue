@@ -62,9 +62,11 @@ export default {
       total: 0,
     }
   },
-  async onLoad({category_id, question_name}) {
+  onLoad({category_id, question_name}) {
     this.categoryId = category_id
     this.questionName = question_name
+  },
+  onShow() {
     this.getAllData()
   },
   methods: {

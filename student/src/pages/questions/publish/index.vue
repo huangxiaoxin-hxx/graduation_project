@@ -65,11 +65,11 @@
 </template>
 
 <script>
-import getUserInfo from '@/api/user'
+import { getUserInfo } from '@/api/user'
 import { mapState } from 'vuex'
 import { submitArticleRule } from '@/checkRule/article'
 var graceChecker = require("@/checkRule/graceChecker.js");
-import { addArticle, getCategories } from '@/api/questions'
+import { addArticle, getCategories, updateArticle, getQuestionDetail } from '@/api/questions'
 export default {
   data() {
     return {
@@ -82,7 +82,8 @@ export default {
       },
       show: false,
       categorySelect: "请选择问题分类",
-      fileList: []
+      fileList: [],
+      isEdit: false
     }
   },
   computed: {
@@ -101,8 +102,13 @@ export default {
       return [list]
     }
   },
-  async onLoad() {
+  async onLoad({article_id}) {
     await getUserInfo()
+    console.log(article_id)
+    if(article_id) {
+      this.editDetail(article_id)
+      this.isEdit = true
+    }
   },
   methods: {
     clickShow() {
@@ -156,7 +162,11 @@ export default {
         mask: true
       })
       try {
-        const data = await addArticle(formData)
+        if(this.isEdit) {
+          const data = await updateArticle(formData)
+        } else {
+          const data = await addArticle(formData)
+        }
         this.handleToast({title: "提交成功"})
         this.formReset()
         getCategories() // 更新vuex的分类数量
@@ -165,6 +175,29 @@ export default {
       } finally {
         uni.hideLoading()
       }
+    },
+    async editDetail(id) {
+      this.handleLoading({title: '加载中'})
+      try {
+        const detail = await getQuestionDetail({id})
+        this.categories.map(item => {
+          if(item._id === detail.category_id) {
+            this.categorySelect = item.name
+            return
+          }
+        })
+        this.article = detail
+        this.fileList.push({
+          status: 'success',
+          message: '',
+          url: detail.avatar
+        })
+      } catch (error) {
+        console.log(error)
+      } finally {
+        uni.hideLoading()
+      }
+      
     }
   }
 }

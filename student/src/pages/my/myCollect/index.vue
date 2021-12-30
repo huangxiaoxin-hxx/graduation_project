@@ -1,44 +1,30 @@
 <template>
   <AliceContainer :isShow="isShow">
-    <AliceHeader slot="header" bgColor="#ffffff" fontColor="#333">我的问题</AliceHeader>
+    <AliceHeader slot="header" bgColor="#ffffff" fontColor="#333">我的收藏</AliceHeader>
 
     <view class="list_container">
-      <view class="search_bar">
-        <u--input
-          placeholder="请输入搜索内容"
-          prefixIcon="search"
-          border="surround"
-          v-model="value"
-          @confirm="search"
-          shape="circle"
-        ></u--input>
-      </view>
       <block v-if="questionList.length">
         <scroll-view
         scroll-y="true" 
         class="scroll-Y"
         >
-          <view class="question_list" v-for="(item, index) in questionList" :key="index" @click="handleNavTo({url: `/pages/questions/questionList/questionDetail/index?id=${item._id}`})">
-            <image :src="item.avatar" alt="avatar" mode="aspectFill" />
+          <view class="question_list" v-for="(item, index) in questionList" :key="index" @click="handleNavTo({url: `/pages/questions/questionList/questionDetail/index?id=${item.article_id[0]._id}`})">
+            <image :src="item.article_id[0].avatar" alt="avatar" mode="aspectFill" />
             <view class="question_list_content">
-              <h6>{{item.title}}
-                <view class="more_icon" @tap.stop="moreClick(item._id)">
-                  <u-icon name="more-dot-fill" color="#333" size="15"></u-icon>
-                </view>
-              </h6>
-              <p>{{item.content}}</p>
+              <h6>{{item.article_id[0].title}}</h6>
+              <p>{{item.article_id[0].content}}</p>
               <view class="hot_box">
                 <view class="hot_box_item">
                   <u-icon name="eye" color="#333" size="15" class="hot_box_item_icon"></u-icon>
-                  {{item.view_count}}
+                  {{item.article_id[0].view_count}}
                 </view>
                 <view class="hot_box_item">
                   <u-icon name="thumb-up" color="#333" size="15" class="hot_box_item_icon"></u-icon>
-                  {{item.like_count}}
+                  {{item.article_id[0].like_count}}
                 </view>
                 <view class="hot_box_item">
                   <u-icon name="chat" color="#333" size="15" class="hot_box_item_icon"></u-icon>
-                  {{item.comment_count}}
+                  {{item.article_id[0].comment_count}}
                 </view>
               </view>
             </view>
@@ -48,45 +34,20 @@
       </block>
       <block v-else>
         <view class="none_data">
-          你暂时没有发布过问题哦～
+          你暂时没有收藏的问题哦～
         </view>
       </block>
-      <view class="pagination_box">
-        <AlicePagination :total="total" :page="page" :limit="limit" @selectPage="selectPage" @clickPage="clickPage" />
-      </view>
     </view>
-    <u-popup :show="show" :round="10" mode="bottom" @close="close">
-      <view class="popup_box">
-        <view class="edit popup_list" @click="goEdit">编辑</view>
-        <view class="delete popup_list" @click="goDelete">删除</view>
-      </view>
-    </u-popup>
-    <u-modal 
-      :show="showModal" 
-      title="是否删除该问题?" 
-      :closeOnClickOverlay="true" 
-      @close="isShowModal" 
-      @cancel="isShowModal" 
-      @confirm="deleteArticle"
-      showCancelButton
-    ></u-modal>
   </AliceContainer>
 </template>
 
 <script>
-import { getMyQuestionList, deleteQuestion } from '@/api/questions'
+import { getCollectQuestionList, deleteQuestion } from '@/api/questions'
 export default {
   name: "questionList",
   data() {
     return {
-      value: '',
-      page: 1,
-      limit: 10,
       questionList: [],
-      total: 0,
-      articleId: null,
-      show: false,
-      showModal: false,
       isShow: false,
     }
   },
@@ -101,68 +62,20 @@ export default {
     }
   },
   methods: {
-    async search() {
-      this.getAllData()
-    },
     async requestList() {
       if(this.isShow) {
         this.handleLoading({title: '搜索中'})
       }
-      const result = await getMyQuestionList({
-        limit: this.limit,
-        page: this.page,
-        searchVal: this.value
-      })
+      const result = await getCollectQuestionList()
       uni.hideLoading()
       return result
     },
     async getAllData() {
       const result = await this.requestList()
       this.questionList = result.data
-      this.total = result.total
+      console.log(this.questionList)
     },
-    selectPage(page) {
-      this.page = page
-    },
-    clickPage(page) {
-      this.page = page
-    },
-    moreClick(id) {
-      this.articleId = id
-      this.show = !this.show
-    },
-    close() {
-      this.show = !this.show
-    },
-    goEdit() {
-      this.handleNavTo({url: '/pages/questions/publish/index?article_id='+ this.articleId})
-      this.close()
-    },
-    goDelete() {
-      this.close()
-      this.isShowModal()
-    },
-    isShowModal() {
-      this.showModal = !this.showModal
-    },
-    async deleteArticle() { // 删除问题
-      try {
-        this.handleLoading({title: '删除中'})
-        await deleteQuestion({article_id: this.articleId})
-        this.isShowModal()
-        this.getAllData()
-      } catch (error) {
-        console.log(error)
-      } finally {
-        uni.hideLoading()
-      }
-    }
   },
-  watch: {
-    page(val) {
-      this.getAllData()
-    }
-  }
 }
 </script>
 
@@ -185,8 +98,8 @@ export default {
     position: absolute;
     width: 100%;
     left: 0;
-    top: 80rpx;
-    bottom: 100rpx;
+    top: 0rpx;
+    bottom: 10rpx;
     padding: 20rpx 32rpx;
     box-sizing: border-box;
     .question_list {

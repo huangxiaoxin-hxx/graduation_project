@@ -6,6 +6,7 @@ const uniID = require('uni-id')
 const favorite = db.collection('opendb-news-favorite')
 const like = db.collection('opendb-news-like')
 const view = db.collection('opendb-news-view')
+const comments = db.collection('opendb-news-comments')
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	const {action, params} = event
@@ -61,6 +62,60 @@ exports.main = async (event, context) => {
 				res = e
 			}
 			break;
+		}
+		case 'getMyQuestionList': {
+			const { limit = 10, page = 1, token, searchVal = '' } = params
+			const payload = await uniID.checkToken(token)
+			if (payload.code) {
+			    return payload
+			}
+			const skip = (page - 1) * limit
+			try{
+				res = await article.where({
+					user_id: payload.uid,
+					title: new RegExp(searchVal, 'g')
+				}).limit(limit).skip(skip).get()
+				const count = await article.where({
+					user_id: payload.uid,
+					title: new RegExp(searchVal, 'g')
+				}).count()
+				res.code = 0
+				res.total = count.total
+			}catch(e){
+				//TODO handle the exception
+				res = e
+			}
+			break;
+		}
+		case 'getCollectQuestionList': {
+			const { limit = 10, page = 1, token, searchVal = '' } = params
+			const payload = await uniID.checkToken(token)
+			if (payload.code) {
+			    return payload
+			}
+			const skip = (page - 1) * limit
+			try{
+				let data = await favorite.aggregate().lookup({
+					from: 'opendb-news-articles',
+					localField: 'article_id',
+					foreignField: '_id',
+					as: 'article_id'
+				})
+				.match({
+					user_id: payload.uid
+				})
+				.project({
+					"article_id": true,
+					quantity: true
+				}).end()
+				res.data = data
+				res.code = 0
+				// res.total = count.total
+			}catch(e){
+				//TODO handle the exception
+				res = e
+			}
+			break
 		}
 		case 'getQuestionDetail': {
 			const {token} = params
@@ -158,6 +213,37 @@ exports.main = async (event, context) => {
 				})
 			}
 			res.code = 0
+			break;
+		}
+		case 'updateArticle': {
+			const { _id } = params
+			delete params._id
+			try{
+				res = await article.doc(_id).update(params)
+				res.code = 0
+			}catch(e){
+				//TODO handle the exception
+				res = e
+			}
+			break;
+		}
+		case 'deleteQuestion': {
+			const {article_id} = params
+			try{
+				const data = await article.doc(article_id).get()
+				res = await article.doc(article_id).remove()
+				const categoriesData = await categories.doc(data.data[0].category_id).get()
+				const count = categoriesData.data[0].article_count
+				await categories.doc(data.data[0].category_id).update({article_count: count - 1})
+				await favorite.where({article_id: article_id}).remove()
+				await like.where({article_id: article_id}).remove()
+				await view.where({article_id: article_id}).remove()
+				await comments.where({article_id: article_id}).remove()
+				res.code = 0
+			}catch(e){
+				//TODO handle the exception
+				res = e
+			}
 			break;
 		}
 		default:

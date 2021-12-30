@@ -14,7 +14,7 @@
         <u-icon name="arrow-right" size="24" color="#333"></u-icon>
       </view>
       <view class="my_center">
-        <view class="list" v-for="(item, index) in list" :key="index">
+        <view class="list" v-for="(item, index) in list" :key="index" @click="handleNavTo({url: item.url})">
           <u-icon :name="item.icon" color="#333" size="22"></u-icon>
           <p>{{item.title}}</p>
           <u-icon name="arrow-right" color="#333" size="22"></u-icon>
@@ -30,12 +30,12 @@ const list = [
   {
     icon: 'file-text',
     title: "我的提问",
-    url: ''
+    url: '/pages/my/myQuestion/index'
   },
   {
     icon: 'star',
     title: "我的收藏",
-    url: ''
+    url: '/pages/my/myCollect/index'
   }
 ]
 import { getUserInfo } from '@/api/user'
